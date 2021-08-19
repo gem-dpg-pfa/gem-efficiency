@@ -225,6 +225,10 @@ if __name__ == "__main__":
                 if deltaphi<min_deltaphi:
                     min_deltaphi=deltaphi
                     min_recIndex=j
+            ## Store information of the closest rechit
+            rec_cls[0] = evt.gemRecHit_cluster_size[min_recIndex]
+            rec_bx[0]  = evt.gemRecHit_bx[min_recIndex]
+
             ## Matching condition: r*dphi 1 cm
             if evt.mu_propagatedGlb_r[i]*abs(min_deltaphi)<1:
                 matched[0] = 1
@@ -250,7 +254,7 @@ if __name__ == "__main__":
                 ## Matching condition: r*dphi 1 cm
                 if evt.mu_propagatedGlb_r[i]*abs(min_deltaphi_2)<1:
                     double_matched[0] = 1
-            # fill branches
+            # For each propagated, fill branches
             outTree.Fill()
     
     outFile.cd()
