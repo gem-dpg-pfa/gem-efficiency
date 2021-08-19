@@ -68,7 +68,7 @@ if __name__ == "__main__":
     )
     
     parser.add_argument('--input_file','-in', type=str,help="Comma separated list of input files to be analyzed",required=True)
-    parser.add_argument('--outputname','-out', type=str,help="Path and name of output file",default="output/output.root")
+    parser.add_argument('--outputname','-out', type=str,help="Path and name of output file",default="output/step1_output.root")
     parser.add_argument('--nevents','-n', type=int,help="Maximum number of events to be analysed",default=-1)
     args = parser.parse_args()
     
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     if os.path.isfile(args.outputname):
         print "Warning: ", args.outputname, " will be overwritten\n"
     else:
-        print "Creating output file," args.outputname,"\n"
+        print "Creating output file: ", args.outputname,"\n"
 
     outFile = ROOT.TFile(args.outputname,"RECREATE")
     outTree1 = ROOT.TTree("hits_perLumi", "hits_perLumi")
@@ -137,7 +137,9 @@ if __name__ == "__main__":
  
     nentries = chain.GetEntries()
     print "Analysing ",nentries," events"
-    
+
+    #disable all branches
+    chain.SetBranchStatus("*",0);     
     # List of branches to be used from input ntuples
     branchList=["event_runNumber", "event_lumiBlock", "event_eventNumber", "gemRecHit_region", "gemRecHit_layer", "gemRecHit_chamber", "gemRecHit_etaPartition", "gemRecHit_loc_x", "gemRecHit_g_r"]
     for b in branchList:
