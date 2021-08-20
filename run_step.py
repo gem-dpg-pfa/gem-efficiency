@@ -59,7 +59,7 @@ error   = {path}/err_{submit_time}_.$(Process)
 output  = {path}/out_{submit_time}_.$(Process)
 log     = {path}/log_{submit_time}__$(Process).log
 +JobFlavour = "workday"
-            '''.format(bash_exe = script_name, path=args.outputpath, submit_time=str(time.time())))
+            '''.format(bash_exe = bash_name, path=args.outputpath, submit_time=str(time.time())))
 
     base_path = ""
     campaign = ""
