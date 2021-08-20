@@ -14,7 +14,7 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
             description='''Script that: \n\t-Executes step1_hit_perLumi_analysis.py or step3_matching.py\n\t-Submits to HTCondor\n''',
-            epilog="""Typical execution\n\t python run_step.py -r 342154 --submit True """,
+            epilog="""Typical execution\n\t python run_step.py -r 342154 --step 1 --submit True """,
             formatter_class=RawTextHelpFormatter
     )
     parser.add_argument('--run','-r', type=str,help="Comma separated list of Cosmic runs to be analyzed",required=True)
