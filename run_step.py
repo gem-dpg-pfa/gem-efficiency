@@ -50,6 +50,7 @@ if __name__ == "__main__":
             '''
 universe = vanilla
 executable     = {bash_exe}
+getenv = True
 
 request_memory = 4096
 request_cpus   = 1
