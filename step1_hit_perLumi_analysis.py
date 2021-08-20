@@ -62,7 +62,7 @@ def propHit2VFAT(glb_r,loc_x,etaP):
  
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-            description='''Scripts that: \n\t-Reads the GEMMuonNtuple\n\t-Store #events per lumi section\n\t-Store #rechits per lumi section per each endcap/layer/chamber/vfat\nProduces plain ntuples for further analysis''',
+            description='''Script that: \n\t-Reads the GEMMuonNtuple\n\t-Store #events per lumi section\n\t-Store #rechits per lumi section per each endcap/layer/chamber/vfat\nProduces plain ntuples for further analysis''',
             epilog="""Typical execution\n\t python step1_hit_perLumi_analysis.py --input_file=/eos/cms/store/group/dpg_gem/comm_gem/P5_Commissioning/2021/GEMCommonNtuples/MWGR4/Run_342154/MuDPGNtuple_2021_MWGR4_5.root, --output output/step1_342154_5.root --nevents -1 """,
             formatter_class=RawTextHelpFormatter
     )
