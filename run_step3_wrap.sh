@@ -1,2 +1,2 @@
 #!/bin/bash
-python $(dirname "$0")/step3_matching.py "$@"
+python $(realpath "$(dirname "${BASH_SOURCE[0]}")")/step3_matching.py "$@"
