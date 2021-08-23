@@ -14,7 +14,7 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
             description='''Script that: \n\t-Executes step1_hit_perLumi_analysis.py or step3_matching.py\n\t-Submits to HTCondor\n''',
-            epilog="""Typical execution\n\t python run_step.py -r 342154 --step 1 --submit True """,
+            epilog="""Typical execution\n\t python run_step.py -r 342154 --submit True """,
             formatter_class=RawTextHelpFormatter
     )
     parser.add_argument('--run','-r', type=str,help="Comma separated list of Cosmic runs to be analyzed",required=True)
@@ -23,6 +23,7 @@ if __name__ == "__main__":
     parser.add_argument('--outputpath', '-o', type=str, help="Path of output files. [Default: %(default)s]",default=working_dir+"/output/")
     parser.add_argument('--execute', '-e', type=int, help="Run code on lxplus session. Set it to -1 to analyse full ntuple, otherwise set it to nevents. [Default: %(default)s]", default=0) 
     parser.add_argument('--submit', '-s', help="Submit to HTCondor. [Default: %(default)s]", default=False) 
+    parser.add_argument('--reco', '-rc', help="ExpressCosmics or PromptReco. Ntuples are stored in different folders. [Default: %(default)s]", default="ExpressCosmics", choices=["ExpressCosmics", "PromptReco"]) 
     args = parser.parse_args()
 
     command = ""
@@ -69,6 +70,7 @@ log     = {path}/log_{submit_time}__$(Process).log
         elif(int(run)<342090): campaign = "MWGR3"
         else: campaign = "MWGR4"
         base_path = "/eos/cms/store/group/dpg_gem/comm_gem/P5_Commissioning/2021/GEMCommonNtuples/"+campaign+"/Run_"+run+"/"
+        if(args.reco=="PromptReco"): base_path = "/eos/user/f/fivone/GEMNTuples/MWGR/2021/"+campaign+"/"+run+"_Prompt/" 
 
         #generating the list of all .root files in given directory and subdirectories
         fileList = []
