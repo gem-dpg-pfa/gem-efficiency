@@ -70,7 +70,8 @@ log     = {path}/log_{submit_time}__$(Process).log
         elif(int(run)<342090): campaign = "MWGR3"
         else: campaign = "MWGR4"
         base_path = "/eos/cms/store/group/dpg_gem/comm_gem/P5_Commissioning/2021/GEMCommonNtuples/"+campaign+"/Run_"+run+"/"
-        if(args.reco=="PromptReco"): base_path = "/eos/user/f/fivone/GEMNTuples/MWGR/2021/"+campaign+"/"+run+"_Prompt/" 
+        if(args.reco=="PromptReco" and int(run)<344700): base_path = "/eos/user/f/fivone/GEMNTuples/MWGR/2021/"+campaign+"/"+run+"_Prompt/" 
+        elif(args.reco=="PromptReco" and int(run)>=344700): base_path = "/eos/cms/store/group/dpg_gem/comm_gem/P5_Commissioning/2021/GEMCommonNtuples/"+campaign+"/"+run+"_Prompt/" 
 
         #generating the list of all .root files in given directory and subdirectories
         fileList = []
