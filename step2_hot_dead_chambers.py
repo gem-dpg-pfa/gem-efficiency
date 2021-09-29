@@ -81,7 +81,7 @@ if __name__ == "__main__":
         for l in layers:
             for ch in range(36):
                 for vfat in range(24):
-                    chain.Draw("nhit_M1["+str(ch)+"]["+str(vfat)+"]>>htemp", "", "")
+                    chain.Draw("nhit_"+e+l+"["+str(ch)+"]["+str(vfat)+"]>>htemp", "", "")
                     htemp = ROOT.gROOT.FindObject('htemp')
                     avg = htemp.GetMean()
                     if avg == 0: #dead vfat
