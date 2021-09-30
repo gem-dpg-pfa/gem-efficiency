@@ -21,8 +21,7 @@ def iEta_iPhi2VFAT(iEta,iPhi):
         sys.exit(0)
     
     if iEta <1 or iEta>8 or iPhi <0 or iPhi>2:
-        print "Invalid iEta and/or iPhi provided position.\nExiting..."
-        sys.exit(0)
+        return -1
     
     VFAT = iPhi*8 + (8-iEta)
     return VFAT
@@ -32,7 +31,10 @@ def stripHit2VFAT(firstStrip,lastStrip,etaP):
         print "Invalid Strip provided position.\nExiting..."
         sys.exit(0)
 
-    iPhi =  0 if (firstStrip<127 and lastStrip<127) else (2 if (firstStrip>255 and lastStrip>255) else 1)
+    iPhi = -1
+    if (firstStrip<127 and lastStrip<127): iPhi = 0
+    elif (firstStrip>255 and lastStrip>255): iPhi = 2
+    elif (firstStrip>127 and lastStrip>127 and firstStrip<255 and lastStrip<255): iPhi = 1
 
     VFAT = iEta_iPhi2VFAT(etaP,iPhi)
 
@@ -171,6 +173,7 @@ if __name__ == "__main__":
             for j in range(nrechits):
                 chamber = evt.gemRecHit_chamber[j] - 1
                 VFAT    = stripHit2VFAT(evt.gemRecHit_firstClusterStrip[j],evt.gemRecHit_firstClusterStrip[j]+evt.gemRecHit_cluster_size[j], evt.gemRecHit_etaPartition[j])
+                if (VFAT==-1): continue
                 if(evt.gemRecHit_region[j]<0 and evt.gemRecHit_layer[j]==1): nhit_M1[chamber][VFAT]+= 1
                 if(evt.gemRecHit_region[j]<0 and evt.gemRecHit_layer[j]==2): nhit_M2[chamber][VFAT]+= 1
                 if(evt.gemRecHit_region[j]>0 and evt.gemRecHit_layer[j]==1): nhit_P1[chamber][VFAT]+= 1
