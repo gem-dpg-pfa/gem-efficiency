@@ -27,17 +27,12 @@ def iEta_iPhi2VFAT(iEta,iPhi):
     VFAT = iPhi*8 + (8-iEta)
     return VFAT
 
-## Associates a propagated hit to a VFAT
-## It is based on default GE11 geometry
-## Might need refinements after alignment 
-def propHit2VFAT(glb_r,loc_x,etaP):
-    ## Magic numbers taken from strip geometry
-    #  They are loc_x/glb_r (basically cos phi) for strip 127 and 255 respectively
-    LeftMost_iPhi_boundary = -0.029824804
-    RightMost_iPhi_boundary = 0.029362374
+def stripHit2VFAT(firstStrip,lastStrip,etaP):
+    if firstStrip <0 or firstStrip>383:
+        print "Invalid Strip provided position.\nExiting..."
+        sys.exit(0)
 
-    prophit_cosine = loc_x/glb_r
-    iPhi =  0 if  prophit_cosine<=LeftMost_iPhi_boundary else (2 if prophit_cosine>RightMost_iPhi_boundary else 1)
+    iPhi =  0 if (firstStrip<127 and lastStrip<127) else (2 if (firstStrip>255 and lastStrip>255) else 1)
 
     VFAT = iEta_iPhi2VFAT(etaP,iPhi)
 
@@ -62,7 +57,7 @@ def propHit2VFAT(glb_r,loc_x,etaP):
  
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-            description='''Script that: \n\t-Reads the GEMMuonNtuple\n\t-Store #events per lumi section\n\t-Store #rechits per lumi section per each endcap/layer/chamber/vfat\nProduces plain ntuples for further analysis''',
+            description='''Scripts that: \n\t-Reads the GEMMuonNtuple\n\t-Store #events per lumi section\n\t-Store #rechits per lumi section per each endcap/layer/chamber/vfat\nProduces plain ntuples for further analysis''',
             epilog="""Typical execution\n\t python step1_hit_perLumi_analysis.py --input_file=/eos/cms/store/group/dpg_gem/comm_gem/P5_Commissioning/2021/GEMCommonNtuples/MWGR4/Run_342154/MuDPGNtuple_2021_MWGR4_5.root, --output output/step1_342154_5.root --nevents -1 """,
             formatter_class=RawTextHelpFormatter
     )
@@ -141,7 +136,7 @@ if __name__ == "__main__":
     #disable all branches
     chain.SetBranchStatus("*",0);     
     # List of branches to be used from input ntuples
-    branchList=["event_runNumber", "event_lumiBlock", "event_eventNumber", "gemRecHit_region", "gemRecHit_layer", "gemRecHit_chamber", "gemRecHit_etaPartition", "gemRecHit_loc_x", "gemRecHit_g_r"]
+    branchList=["event_runNumber", "event_lumiBlock", "event_eventNumber", "gemRecHit_region", "gemRecHit_layer", "gemRecHit_chamber", "gemRecHit_etaPartition", "gemRecHit_firstClusterStrip", "gemRecHit_cluster_size"]
     for b in branchList:
         chain.SetBranchStatus(b,1);
     
@@ -175,7 +170,7 @@ if __name__ == "__main__":
             ## Loop on rechits
             for j in range(nrechits):
                 chamber = evt.gemRecHit_chamber[j] - 1
-                VFAT    = propHit2VFAT(evt.gemRecHit_g_r[j],evt.gemRecHit_loc_x[j], evt.gemRecHit_etaPartition[j])
+                VFAT    = stripHit2VFAT(evt.gemRecHit_firstClusterStrip[j],evt.gemRecHit_firstClusterStrip[j]+evt.gemRecHit_cluster_size[j], evt.gemRecHit_etaPartition[j])
                 if(evt.gemRecHit_region[j]<0 and evt.gemRecHit_layer[j]==1): nhit_M1[chamber][VFAT]+= 1
                 if(evt.gemRecHit_region[j]<0 and evt.gemRecHit_layer[j]==2): nhit_M2[chamber][VFAT]+= 1
                 if(evt.gemRecHit_region[j]>0 and evt.gemRecHit_layer[j]==1): nhit_P1[chamber][VFAT]+= 1
