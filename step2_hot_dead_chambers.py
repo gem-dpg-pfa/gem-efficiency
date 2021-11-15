@@ -80,12 +80,30 @@ if __name__ == "__main__":
     for e in endcaps:
         for l in layers:
             for ch in range(36):
+                avg_perVFAT = []
+                peak_perVFAT = []
                 for vfat in range(24):
-                    chain.Draw("nhit_"+e+l+"["+str(ch)+"]["+str(vfat)+"]>>htemp", "", "")
-                    htemp = ROOT.gROOT.FindObject('htemp')
-                    avg = htemp.GetMean()
+                    chain.Draw("nhit_"+e+l+"["+str(ch)+"]["+str(vfat)+"]/nevt>>hrate1d_"+e+l+"_"+str(ch)+"_"+str(vfat), "", "")
+                    htemp = ROOT.gROOT.FindObject("hrate1d_"+e+l+"_"+str(ch)+"_"+str(vfat))
+                    avg = float(htemp.GetMean())
+                    peak = float(htemp.GetXaxis().GetXmax())
                     if avg == 0: #dead vfat
                         fout.write(e+"\t"+l+"\t"+str(ch+1)+"\t"+str(vfat)+"\t1\n")
-                    elif avg > args.hot_rate: #hot vfat
+                    avg_perVFAT.append(avg)
+                    peak_perVFAT.append(peak)
+                #remove zeros
+                avg_perVFAT_notZero = [x for x in avg_perVFAT if x != 0.0]
+                avg_perChamber = sum(avg_perVFAT_notZero)/len(avg_perVFAT_notZero) if len(avg_perVFAT_notZero)>0 else 0.0
+                stdev_perChamber = np.std(avg_perVFAT_notZero)
+                #print ch, avg_perChamber, stdev_perChamber
+                for vfat, avg in enumerate(avg_perVFAT):
+                    #print vfat, ": ",avg," peak: ",peak_perVFAT[vfat]
+                    if avg == 0: continue
+                    #noisy chambers: average occupancy-mean>2sigmas
+                    elif (avg-avg_perChamber) > 2*stdev_perChamber :        
                         fout.write(e+"\t"+l+"\t"+str(ch+1)+"\t"+str(vfat)+"\t2\n")
+                        #print "removed"
+                    elif peak_perVFAT[vfat]>1.0:
+                        fout.write(e+"\t"+l+"\t"+str(ch+1)+"\t"+str(vfat)+"\t2\n")
+                        #print "  removed"
     fout.close()
