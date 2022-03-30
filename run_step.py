@@ -30,7 +30,6 @@ parser.add_argument('--run','-r', type=str,help="Space separated list of runs to
 parser.add_argument('--submit', '-s', help="Submit to HTCondor. [Default: %(default)s]", default=True) 
 args = parser.parse_args()
 if __name__ == "__main__":
-    command = ""
 
     ## Get list of Cosmic runs
     runList = []
@@ -44,10 +43,8 @@ if __name__ == "__main__":
     bash_name = working_dir+"/CondorFiles/run_step1_wrap.sh" 
     with open(bash_name,'w') as job_file:
         job_file.write(
-            '''
-            #!/bin/bash
-            python {path}/step1_hit_perLumi_analysis.py "$@"
-            '''.format(path=working_dir))
+'''#!/bin/bash
+python {path}/step1_hit_perLumi_analysis.py "$@" '''.format(path=working_dir))
     script_name = "step1_hit_perLumi_analysis.py" 
 
     for run in runList:
@@ -58,18 +55,18 @@ if __name__ == "__main__":
             with open(condorsubmit_file, 'w') as submit_file:
                 submit_file.write(
                 '''
-                universe = vanilla
-                executable     = {bash_exe}
-                getenv = True
-    
-                request_memory = 4096
-                request_cpus   = 1
-                request_disk   = 16383
-    
-                error   = ./CondorFiles/err_{submit_time}_.$(Process)
-                output  = ./CondorFiles/out_{submit_time}_.$(Process)
-                log     = ./CondorFiles/log_{submit_time}_$(Process).log
-                +JobFlavour = "workday"
+universe = vanilla
+executable     = {bash_exe}
+getenv = True
+
+request_memory = 4096
+request_cpus   = 1
+request_disk   = 16383
+
+error   = ./CondorFiles/err_{submit_time}_.$(Process)
+output  = ./CondorFiles/out_{submit_time}_.$(Process)
+log     = ./CondorFiles/log_{submit_time}_$(Process).log
++JobFlavour = "workday"
                 '''.format(bash_exe = bash_name, path=outputpath, submit_time=str(time.time())))
 
 
@@ -82,9 +79,8 @@ if __name__ == "__main__":
             with open(condorsubmit_file, 'a') as submit_file:
                 submit_file.write(
                 '''
-                arguments = {arg}
-                queue
+arguments = {arg}
+queue
                 '''.format(arg = arg_string))
 
-    
     os.system("condor_submit "+condorsubmit_file)
