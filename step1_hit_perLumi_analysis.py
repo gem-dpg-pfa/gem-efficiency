@@ -11,20 +11,13 @@ import argparse
 import pandas as pd
 from array import array
 from argparse import RawTextHelpFormatter
-
-def iEta_iPhi2VFAT(iEta,iPhi):
-    try:
-        etaP = int(iEta)
-        phi = int(iPhi)
-    except:
-        print "Provided iEta and/or iPhi are not numbers.\nExiting..."
-        sys.exit(0)
-    
-    if iEta <1 or iEta>8 or iPhi <0 or iPhi>2:
-        return -1
-    
-    VFAT = iPhi*8 + (8-iEta)
-    return VFAT
+lib_folder = os.path.expandvars('$PFA')
+lib_folder += "/lib/"
+sys.path.insert(1, lib_folder)
+try:
+    from PFA_Analyzer_Utils import *
+except:
+   print ("ERROR:\n\tCan't find the package PFA_Analyzer_Utils in ",lib_folder,"\nEXITING...\n")
 
 def stripHit2VFAT(firstStrip,lastStrip,etaP):
     if firstStrip <0 or firstStrip>383:
@@ -32,29 +25,15 @@ def stripHit2VFAT(firstStrip,lastStrip,etaP):
         sys.exit(0)
 
     iPhi = -1
-    if (firstStrip<127 and lastStrip<127): iPhi = 0
-    elif (firstStrip>255 and lastStrip>255): iPhi = 2
-    elif (firstStrip>127 and lastStrip>127 and firstStrip<255 and lastStrip<255): iPhi = 1
+    if (firstStrip<=127): iPhi = 0
+    elif (firstStrip>255): iPhi = 2
+    elif (firstStrip>127 and firstStrip<=255): iPhi = 1
 
+    
     VFAT = iEta_iPhi2VFAT(etaP,iPhi)
 
     return VFAT
 
-#### Let's add some more from different folder
-#lib_folder = os.path.expandvars('$myLIB')
-#sys.path.insert(1, lib_folder)
-#try:
-#    from ROOT_Utils import *
-#    
-#
-#except:
-#  print("ERROR:\n\tCan't find the package CMS_lumi and tdrstlye\n\tPlease verify that this file are placed in the path $myLIB/ROOT_Utils/ \n\tAdditionally keep in mind to export the environmental variable $myLIB\nEXITING...\n") 
-#  sys.exit(0)
-#try:
-#    from PFA_Analyzer_Utils import *
-#except:
-#    print ("ERROR:\n\tCan't find the package PFA_Analyzer_Utils\nEXITING...\n")
-#    sys.exit(0)
 
  
 if __name__ == "__main__":
@@ -140,7 +119,7 @@ if __name__ == "__main__":
     # List of branches to be used from input ntuples
     branchList=["event_runNumber", "event_lumiBlock", "event_eventNumber", "gemRecHit_region", "gemRecHit_layer", "gemRecHit_chamber", "gemRecHit_etaPartition", "gemRecHit_firstClusterStrip", "gemRecHit_cluster_size"]
     for b in branchList:
-        chain.SetBranchStatus(b,1);
+        chain.SetBranchStatus(b,1)
     
     nevt[0]=0
     nhit_M1.fill(0)

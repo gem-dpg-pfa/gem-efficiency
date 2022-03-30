@@ -80,6 +80,7 @@ if __name__ == "__main__":
     for e in endcaps:
         for l in layers:
             for ch in range(36):
+                print "Processing GE11-"+e+'-%02d' % (ch+1) +"L"+str(l)
                 avg_perVFAT = []
                 peak_perVFAT = []
                 for vfat in range(24):
