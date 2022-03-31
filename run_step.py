@@ -75,7 +75,7 @@ log     = ./CondorFiles/log_{submit_time}_$(Process).log
 
         for idx,file_path in enumerate(fileList):
 
-            arg_string = "--input_file="+file_path+" --output "+outputpath+"/step1_"+run+"_"+str(idx)+".root --nevents 0"
+            arg_string = "--input_file="+file_path+" --output "+outputpath+"/step1_"+run+"_"+str(idx)+".root --nevents -1"
             with open(condorsubmit_file, 'a') as submit_file:
                 submit_file.write(
                 '''

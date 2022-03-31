@@ -1,18 +1,20 @@
 import ROOT
-import csv
 import os.path
-from os import mkdir
-import subprocess
 import numpy as np
-import math
-import sys
-import time
 import argparse
-import pandas as pd
-from array import array
+import sys
 from argparse import RawTextHelpFormatter
+lib_folder = os.path.expandvars('$DOC2_PFA')
+lib_folder += "Analyzer/lib/"
+sys.path.insert(1, lib_folder)
+try:
+    from PFA_Analyzer_Utils import *
+except:
+   print ("ERROR:\n\tCan't find the package PFA_Analyzer_Utils in ",lib_folder,"\nEXITING...\n")
+   sys.exit(0)
 
-working_dir = os.path.dirname(os.path.abspath(__file__))
+
+base_dir = os.path.expandvars("$DOC2_PFA")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -23,14 +25,12 @@ if __name__ == "__main__":
     
     parser.add_argument('--run','-r', type=str,help="Comma separated list of Cosmic runs to be analyzed",required=True)
     parser.add_argument('--inputfile','-inF', type=str,help="Path of input file.")
-    parser.add_argument('--inputpath','-inP', type=str,help="Path of directory containing input files. [Default: %(default)s] ",default=working_dir+"/output/")
-    parser.add_argument('--outputpath','-out', type=str,help="Path of output files. [Default: %(default)s] ",default=working_dir+"/output/")
-    parser.add_argument('--hot_rate','-hr', type=float,help="Max value of hits per lumi per VFAT. [Default: %(default)s] ",default=0.7)
+    parser.add_argument('--inputpath','-inP', type=str,help="Path of directory containing input files. [Default: %(default)s] ",default=base_dir+"/VFAT_MaskMaker/output/")
+    parser.add_argument('--outputpath','-out', type=str,help="Path of output files. [Default: %(default)s] ",default=base_dir+"/Analyzer/ExcludeMe/")
     args = parser.parse_args()
     
     ROOT.gROOT.SetBatch(True)
     
-    ## Get list of Cosmic runs
     runList = []
     if args.run != None:
         runList = map(str, args.run.split(','))
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     print "Analysing ",nentries," lumis"
 
     # prepare output file (list of hot/dead VFATs)
-    fout_name = args.outputpath+"step2_hot_dead_vfat_run"+args.run.replace(",", "_")+".txt"
+    fout_name = args.outputpath+"/ListOfDeadVFAT_run"+GetRunNumber(run)+".txt"
     fout = open(fout_name, "w")
     if os.path.isfile(fout_name):
         print "Warning: ", fout_name, " will be overwritten\n"

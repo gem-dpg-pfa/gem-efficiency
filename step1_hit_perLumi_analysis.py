@@ -1,23 +1,20 @@
 import ROOT
-import csv
 import os.path
-from os import mkdir
-import subprocess
-import numpy as np
-import math
 import sys
-import time
+import numpy as np
+import sys
 import argparse
-import pandas as pd
 from array import array
 from argparse import RawTextHelpFormatter
-lib_folder = os.path.expandvars('$PFA')
-lib_folder += "/lib/"
+lib_folder = os.path.expandvars('$DOC2_PFA')
+lib_folder += "Analyzer/lib/"
 sys.path.insert(1, lib_folder)
+print sys.path
 try:
     from PFA_Analyzer_Utils import *
 except:
    print ("ERROR:\n\tCan't find the package PFA_Analyzer_Utils in ",lib_folder,"\nEXITING...\n")
+   sys.exit(0)
 
 def stripHit2VFAT(firstStrip,lastStrip,etaP):
     if firstStrip <0 or firstStrip>383:
@@ -35,7 +32,6 @@ def stripHit2VFAT(firstStrip,lastStrip,etaP):
     return VFAT
 
 
- 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
             description='''Scripts that: \n\t-Reads the GEMMuonNtuple\n\t-Store #events per lumi section\n\t-Store #rechits per lumi section per each endcap/layer/chamber/vfat\nProduces plain ntuples for further analysis''',
@@ -177,7 +173,7 @@ if __name__ == "__main__":
             nhit_P1.fill(0)
             nhit_P2.fill(0)
     
-        # update lumi before going to next event
+        # updte lumi before going to next event
         lumi_check=int(evt.event_lumiBlock)
     
     outFile.cd()
