@@ -9,7 +9,7 @@ import array
 import time
 from argparse import RawTextHelpFormatter
 lib_folder = os.path.expandvars('$DOC2_PFA')
-lib_folder += "/lib/"
+lib_folder += "Analyzer/lib/"
 sys.path.insert(1, lib_folder)
 try:
     from ROOT_Utils import *
