@@ -19,11 +19,11 @@ base_dir = os.path.expandvars("$DOC2_PFA")
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
             description='''Scripts that: \n\t-Reads the mini-tree produced at step1\n\t-Identifies dead and hot VFATs (this will include chambers completely off\n\t-Identifies HV trips by looking for drops in the rechits vs lumi distributions (not yet implemented)\n\t-Produces list of vfats and lumis to be excluded from further analysis''',
-            epilog="""Typical execution\n\t python step2_hot_dead_chambers.py -r 342154""",
+            epilog="""Typical execution\n\t python step2_hot_dead_chambers.py -r 349758_Express""",
             formatter_class=RawTextHelpFormatter
     )
     
-    parser.add_argument('--run','-r', type=str,help="Comma separated list of Cosmic runs to be analyzed",required=True)
+    parser.add_argument('--run','-r', type=str,help="Single run tag previously analyzed with step1. Es. 349758_Express",required=True)
     parser.add_argument('--inputfile','-inF', type=str,help="Path of input file.")
     parser.add_argument('--inputpath','-inP', type=str,help="Path of directory containing input files. [Default: %(default)s] ",default=base_dir+"/VFAT_MaskMaker/output/")
     parser.add_argument('--outputpath','-out', type=str,help="Path of output files. [Default: %(default)s] ",default=base_dir+"/Analyzer/ExcludeMe/")
@@ -33,9 +33,9 @@ if __name__ == "__main__":
     
     runList = []
     if args.run != None:
-        runList = map(str, args.run.split(','))
+        runList = [args.run]
     else:
-        print "Error: provide run number"
+        print "Error: provide run tag"
         exit()
     print runList
         

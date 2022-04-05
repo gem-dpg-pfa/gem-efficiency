@@ -63,9 +63,9 @@ request_memory = 4096
 request_cpus   = 1
 request_disk   = 16383
 
-error   = ./CondorFiles/err_{submit_time}_.$(Process)
-output  = ./CondorFiles/out_{submit_time}_.$(Process)
-log     = ./CondorFiles/log_{submit_time}_$(Process).log
+error   = ./CondorFiles/err_{submit_time}_$(Process)
+output  = ./CondorFiles/out_{submit_time}_$(Process)
+log     = ./CondorFiles/log_{submit_time}_$(Process)
 +JobFlavour = "workday"
                 '''.format(bash_exe = bash_name, path=outputpath, submit_time=str(time.time())))
 
