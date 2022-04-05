@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     fout.write("region\tlayer\tchamber\tVFAT\treason_mask\n")
     
-    endcaps = ["M", "P"]
+    endcaps = ["P","M"]
     layers = ["1", "2"]
     for e in endcaps:
         for l in layers:
@@ -88,8 +88,7 @@ if __name__ == "__main__":
                     htemp = ROOT.gROOT.FindObject("hrate1d_"+e+l+"_"+str(ch)+"_"+str(vfat))
                     avg = float(htemp.GetMean())
                     peak = float(htemp.GetXaxis().GetXmax())
-                    if avg == 0: #dead vfat
-                        fout.write(e+"\t"+l+"\t"+str(ch+1)+"\t"+str(vfat)+"\t1\n")
+
                     avg_perVFAT.append(avg)
                     peak_perVFAT.append(peak)
                 #remove zeros
@@ -99,7 +98,9 @@ if __name__ == "__main__":
                 #print ch, avg_perChamber, stdev_perChamber
                 for vfat, avg in enumerate(avg_perVFAT):
                     #print vfat, ": ",avg," peak: ",peak_perVFAT[vfat]
-                    if avg == 0: continue
+                    #print "GE11-",e,"-",str(ch),"L",l,"\t VFAT ",vfat,"\tAVG = ",avg,"\tchamberavg = ",avg_perChamber,"\tstd = ",stdev_perChamber
+                    if (avg - avg_perChamber) < -stdev_perChamber or avg == 0:
+                        fout.write(e+"\t"+l+"\t"+str(ch+1)+"\t"+str(vfat)+"\t1\n")
                     #noisy chambers: average occupancy-mean>2sigmas
                     elif (avg-avg_perChamber) > 2*stdev_perChamber :        
                         fout.write(e+"\t"+l+"\t"+str(ch+1)+"\t"+str(vfat)+"\t2\n")
