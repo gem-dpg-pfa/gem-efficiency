@@ -81,7 +81,7 @@ if __name__ == "__main__":
     outTree1.Branch("nhit_P2", nhit_P2,"nhit_P2[36][24]/I")
     
     ##branches in output file
-    evt_2 = array('I', [0])
+    evt_2 = array('L', [0])
     run_2  = array('i', [0])
     lumi_2 = array('i', [0])
     nhit_M1_2 = np.zeros(shape=(36), dtype=np.uint32)
