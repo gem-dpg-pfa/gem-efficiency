@@ -21,13 +21,12 @@ outputpath=working_dir+"/output/"
 
 
 parser = argparse.ArgumentParser(
-    description='''Script that: \n\t-Submits step1_hit_perLumi_analysis.py to HTCondor\n''',
+    description='''Script that: \n\t-Submits step1_hit_perLumi_analysis.py and step2_hit_perLumi_analysis.py to HTCondor to get VFAT masks for the run\n''',
     epilog="""Typical execution\n\t python run_step.py -r 349263_Express""",
     formatter_class=RawTextHelpFormatter
     )
 
 parser.add_argument('--run','-r', type=str,help="Space separated list of runs to be analyzed",required=True, nargs='*')
-parser.add_argument('--submit', '-s', help="Submit to HTCondor. [Default: %(default)s]", default=True) 
 args = parser.parse_args()
 if __name__ == "__main__":
 
@@ -39,22 +38,29 @@ if __name__ == "__main__":
         print "Error: provide run number"
         exit()
     print runList
-
-    bash_name = working_dir+"/CondorFiles/run_step1_wrap.sh" 
-    with open(bash_name,'w') as job_file:
-        job_file.write(
+    
+    ## CREATING THE EXECUTABLES, BASED ON PYTHON CODES
+    bash1_name = working_dir+"/CondorFiles/run_step1_wrap.sh" 
+    bash2_name = working_dir+"/CondorFiles/run_step2_wrap.sh" 
+    with open(bash1_name,'w') as executable_file:
+        executable_file.write(
 '''#!/bin/bash
 python {path}/step1_hit_perLumi_analysis.py "$@" '''.format(path=working_dir))
-    script_name = "step1_hit_perLumi_analysis.py" 
+
+    with open(bash2_name,'w') as executable_file:
+        executable_file.write(
+'''#!/bin/bash
+python {path}/step2_hot_dead_chambers.py "$@" '''.format(path=working_dir))
+
+
 
     for run in runList:
         fileList = files_in_folder(run)
-        # for HTCondor submission, prepare file
-        if(args.submit):
-            condorsubmit_file = "./CondorFiles/"+"condor_"+run+".submit"
-            with open(condorsubmit_file, 'w') as submit_file:
-                submit_file.write(
-                '''
+        # prepare step1 file for HTCondor submission
+        condorsubmit1_file = working_dir+"/CondorFiles/condor_step1_"+run+".submit"
+        with open(condorsubmit1_file, 'w') as submit1_file:
+            submit1_file.write(
+            '''
 universe = vanilla
 executable     = {bash_exe}
 getenv = True
@@ -63,24 +69,58 @@ request_memory = 4096
 request_cpus   = 1
 request_disk   = 16383
 
-error   = ./CondorFiles/err_{submit_time}_$(Process)
-output  = ./CondorFiles/out_{submit_time}_$(Process)
-log     = ./CondorFiles/log_{submit_time}_$(Process)
+error   = {workdir}/CondorFiles/JobFiles/err_{submit_time}_$(Process)
+output  = {workdir}/CondorFiles/JobFiles/out_{submit_time}_$(Process)
+log     = {workdir}/CondorFiles/JobFiles/log_{submit_time}_$(Process)
 +JobFlavour = "workday"
-                '''.format(bash_exe = bash_name, path=outputpath, submit_time=str(time.time())))
+            '''.format(workdir=working_dir,bash_exe = bash1_name, path=outputpath, submit_time=str(time.time())))
+
+        print('Number of jobs is {0:2d}'.format(len(fileList)))
 
 
-        n_chunk = len(fileList)
-        print('Number of jobs is {0:2d}'.format(n_chunk))
-
+        ## ADDING THE INPUT FILES TO THE SUBMISSION FILE
         for idx,file_path in enumerate(fileList):
-
             arg_string = "--input_file="+file_path+" --output "+outputpath+"/step1_"+run+"_"+str(idx)+".root --nevents -1"
-            with open(condorsubmit_file, 'a') as submit_file:
-                submit_file.write(
+            with open(condorsubmit1_file, 'a') as submit1_file:
+                submit1_file.write(
                 '''
 arguments = {arg}
 queue
                 '''.format(arg = arg_string))
 
-    os.system("condor_submit "+condorsubmit_file)
+
+        # prepare step2 file for HTCondor submission        
+        condorsubmit2_file = working_dir+"/CondorFiles/"+"condor_step2_"+run+".submit"
+        step2_argument="-r "+ run
+        with open(condorsubmit2_file, "w") as submit2_file:
+            submit2_file.write(
+            '''
+universe = vanilla
+executable     = {bash_exe}
+getenv = True
+
+request_memory = 4096
+request_cpus   = 1
+request_disk   = 16383
+
+error   = {workdir}/CondorFiles/JobFiles/step2_err_$(Process)
+output  = {workdir}/CondorFiles/JobFiles/step2_out_$(Process)
+log     = {workdir}/CondorFiles/JobFiles/step2_log_$(Process)
++JobFlavour = "workday"
+notify_user = francesco.ivone@cern.ch
+notification = always
+arguments = {arg}
+queue
+                '''.format(workdir=working_dir,bash_exe = bash2_name, path=outputpath, arg=step2_argument))
+
+        # prepare CONDOR DAG file:  will run step1 submission and then, at the step1 termination, will run step2        
+        condorDAG_file = working_dir+"/CondorFiles/condor_DAG_"+run+".dag"
+        with open(condorDAG_file, "w") as DAG_file:
+            DAG_file.write(
+                """
+JOB A {step1_submit}
+JOB B {step2_submit}
+PARENT A CHILD B
+                """.format(step1_submit=condorsubmit1_file,step2_submit=condorsubmit2_file))
+            
+        os.system("condor_submit_dag "+condorDAG_file)
