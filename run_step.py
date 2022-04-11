@@ -123,4 +123,4 @@ JOB B {step2_submit}
 PARENT A CHILD B
                 """.format(step1_submit=condorsubmit1_file,step2_submit=condorsubmit2_file))
             
-        os.system("condor_submit_dag "+condorDAG_file)
+        os.system("condor_submit_dag -dont_suppress_notification"+condorDAG_file)
