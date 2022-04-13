@@ -8,7 +8,7 @@ import math
 import array
 import time
 from argparse import RawTextHelpFormatter
-base_dir = os.path.expandvars('$PFA')
+base_dir = os.path.expandvars('$DOC2_PFA')
 lib_folder = base_dir+ "/Analyzer/lib/"
 sys.path.insert(1, lib_folder)
 try:

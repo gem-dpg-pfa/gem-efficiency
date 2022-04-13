@@ -4,7 +4,7 @@ import numpy as np
 import argparse
 import sys
 from argparse import RawTextHelpFormatter
-lib_folder = os.path.expandvars('$PFA')
+lib_folder = os.path.expandvars('$DOC2_PFA')
 lib_folder += "/Analyzer/lib/"
 sys.path.insert(1, lib_folder)
 try:
