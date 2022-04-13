@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument('--run','-r', type=str,help="Single run tag previously analyzed with step1. Es. 349758_Express",required=True)
     parser.add_argument('--inputfile','-inF', type=str,help="Path of input file.")
     parser.add_argument('--inputpath','-inP', type=str,help="Path of directory containing input files. [Default: %(default)s] ",default=base_dir+"/VFAT_MaskMaker/output/")
-    parser.add_argument('--outputpath','-out', type=str,help="Path of output files. [Default: %(default)s] ",default=base_dir+"/PFA_Analyzer/ExcludeMe/")
+    parser.add_argument('--outputpath','-out', type=str,help="Path of output files. [Default: %(default)s] ",default=base_dir+"/Analyzer/ExcludeMe/")
     args = parser.parse_args()
     
     ROOT.gROOT.SetBatch(True)
