@@ -2,4 +2,3 @@
 *.pyc
 *.root
 output/
-CondorFiles/
