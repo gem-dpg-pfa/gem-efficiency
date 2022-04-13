@@ -4,8 +4,8 @@ import numpy as np
 import argparse
 import sys
 from argparse import RawTextHelpFormatter
-lib_folder = os.path.expandvars('$DOC2_PFA')
-lib_folder += "Analyzer/lib/"
+lib_folder = os.path.expandvars('$PFA')
+lib_folder += "/Analyzer/lib/"
 sys.path.insert(1, lib_folder)
 try:
     from PFA_Analyzer_Utils import *
@@ -14,7 +14,7 @@ except:
    sys.exit(0)
 
 
-base_dir = os.path.expandvars("$DOC2_PFA")
+base_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__))+"/../")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument('--run','-r', type=str,help="Single run tag previously analyzed with step1. Es. 349758_Express",required=True)
     parser.add_argument('--inputfile','-inF', type=str,help="Path of input file.")
     parser.add_argument('--inputpath','-inP', type=str,help="Path of directory containing input files. [Default: %(default)s] ",default=base_dir+"/VFAT_MaskMaker/output/")
-    parser.add_argument('--outputpath','-out', type=str,help="Path of output files. [Default: %(default)s] ",default=base_dir+"/Analyzer/ExcludeMe/")
+    parser.add_argument('--outputpath','-out', type=str,help="Path of output files. [Default: %(default)s] ",default=base_dir+"/PFA_Analyzer/ExcludeMe/")
     args = parser.parse_args()
     
     ROOT.gROOT.SetBatch(True)

@@ -6,8 +6,8 @@ import sys
 import argparse
 from array import array
 from argparse import RawTextHelpFormatter
-lib_folder = os.path.expandvars('$DOC2_PFA')
-lib_folder += "Analyzer/lib/"
+lib_folder = os.path.expandvars('$PFA')
+lib_folder += "/Analyzer/lib/"
 sys.path.insert(1, lib_folder)
 try:
     from PFA_Analyzer_Utils import *

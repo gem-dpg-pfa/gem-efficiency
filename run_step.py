@@ -8,15 +8,15 @@ import math
 import array
 import time
 from argparse import RawTextHelpFormatter
-lib_folder = os.path.expandvars('$DOC2_PFA')
-lib_folder += "Analyzer/lib/"
+base_dir = os.path.expandvars('$PFA')
+lib_folder = base_dir+ "/Analyzer/lib/"
 sys.path.insert(1, lib_folder)
 try:
     from ROOT_Utils import *
 except:
    print ("ERROR:\n\tCan't find the package ROOT_Utils in ",lib_folder,"\nEXITING...\n")
 
-working_dir = os.path.dirname(os.path.abspath(__file__))
+working_dir = base_dir+"/VFAT_MaskMaker/"
 outputpath=working_dir+"/output/"
 
 
@@ -107,20 +107,6 @@ error   = {workdir}/CondorFiles/JobFiles/step2_err_$(Process)
 output  = {workdir}/CondorFiles/JobFiles/step2_out_$(Process)
 log     = {workdir}/CondorFiles/JobFiles/step2_log_$(Process)
 +JobFlavour = "workday"
-notify_user = francesco.ivone@cern.ch
-notification = always
 arguments = {arg}
 queue
                 '''.format(workdir=working_dir,bash_exe = bash2_name, path=outputpath, arg=step2_argument))
-
-        # prepare CONDOR DAG file:  will run step1 submission and then, at the step1 termination, will run step2        
-        condorDAG_file = working_dir+"/CondorFiles/condor_DAG_"+run+".dag"
-        with open(condorDAG_file, "w") as DAG_file:
-            DAG_file.write(
-                """
-JOB A {step1_submit}
-JOB B {step2_submit}
-PARENT A CHILD B
-                """.format(step1_submit=condorsubmit1_file,step2_submit=condorsubmit2_file))
-            
-        os.system("condor_submit_dag -dont_suppress_notification"+condorDAG_file)
