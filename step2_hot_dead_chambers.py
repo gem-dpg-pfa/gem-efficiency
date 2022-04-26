@@ -109,3 +109,11 @@ if __name__ == "__main__":
                         fout.write(e+"\t"+l+"\t"+str(ch+1)+"\t"+str(vfat)+"\t2\n")
                         #print "  removed"
     fout.close()
+
+    ## Removing file to save space
+    for f in fileList:
+        if not os.path.isfile(f):
+            print "File: ",f, " does not exist\n"
+            continue
+        else:
+            os.remove(f)
